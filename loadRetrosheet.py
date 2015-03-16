@@ -12,7 +12,7 @@ url_list = [
 ]
 
 # Some regex helpers
-eventName = re.compile(r"([0-9]{4})([A-Z]{3})\.EV(A|N)")
+teamEventFile = re.compile(r"([0-9]{4})([A-Z]{3})\.EV(A|N)")
 
 def downloadFile(url):
 	extension = url.split(".")[-1]
@@ -52,19 +52,23 @@ def downloadFile(url):
 	print "Saved to: " + file_name
 	return file_name
 
-def loadTeamLogs(zipPath):
+def playTeamLogs(zipPath, teamName):
 	zipFile = zipfile.ZipFile(zipPath)
 	for zipInfo in zipFile.infolist():
-		with zipFile.open(zipInfo) as zipElem:
-			match = eventName.match(zipInfo.filename)
-			if match != None:
-				# print "Year: " + match.group(1)
-				# print "Team: " + match.group(2)
-				# print "League: " + match.group(3)
-				if "WAS" in zipInfo.filename:
-					eventfile.processEventLog(zipElem)
+		match = teamEventFile.match(zipInfo.filename)
+		if match == None:
+			# TODO: Handle non-event-file zip files. There is a TEAM one that
+			# is very common, maybe helpful.
+			pass
+		else:
+			# print "Year: " + match.group(1)
+			# print "Team: " + match.group(2)
+			# print "League: " + match.group(3)	
+			with zipFile.open(zipInfo) as zipElem:
+				eventfile.processEventLog(zipElem)
+
 
 if __name__ == "__main__":
 	for url in url_list:
-		filename = downloadFile(url)
-		loadTeamLogs(filename)
+		zipFilename = downloadFile(url)
+		loadTeamLogs(zipFilename, "WAS")

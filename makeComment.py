@@ -1,31 +1,23 @@
-import sys
+inputString = """
 
-def usage():
-	name = sys.argv[0].split("/")[-1]
-	print "Usage: " + name + " <string>"
-	print "Prints a comment formatted version of string to stdout."
+com The final record type is used primarily to add explanatory information for a play. However, it may occur anywhere in a file. The second field of the com record is quoted.
 
-def makeComment(string, colmax=80):
-	words = string.split(" ")
-	lines = ["# "]
+com,"ML debut for Behenna"
+There is a standard record ordering for each game. An id record starts the description of a particular game. This is followed by the version and info records. The start records follow the info records. The game is described by a series of play, sub and com records. A sub record is always preceded by a play np record. data records follow the last play record for the game. A game description is terminated by an id record starting another game or the end of the file.
 
-	for word in words:
-		piece = word + " "
-		if len(piece) + len(lines[-1]) > colmax:
-			lines += ["# "]
+"""
 
-		lines[-1] += piece
+RULER_WIDTH = 80
+TAB_WIDTH 	= 4
+CMNT_WIDTH	= 2 # Width of " #"
+TAB_LEVEL	= 1
+TEXT_WIDTH	= RULER_WIDTH - (TAB_LEVEL * TAB_WIDTH + CMNT_WIDTH)
 
-	return "\n".join(lines)
+import textwrap
+w = textwrap.TextWrapper(width=TEXT_WIDTH, \
+	break_long_words=False,
+	replace_whitespace=False)
+print "\n".join(w.wrap(inputString))
 
-contents = sys.stdin.read()
 
-if len(contents) == 0:
-	usage()
-	exit()
-if len(sys.argv) == 2:	
-	colmax = int(sys.argv[1])
-	print makeComment(contents, colmax)
-else:
-	print makeComment(contents)
 

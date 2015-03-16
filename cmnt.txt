@@ -1,11 +1,20 @@
-start and sub There are 18 (for the NL and pre-DH AL) or 20 (for the AL with the DH) start records, which identify the starting lineups for the game. Each start or sub record has five fields. The sub records are used when a player is replaced during a game. The roster files that accompany the event files include throwing and batting handedness information.
+play The play records contain the events of the game. Each play record has 7 fields.
 
-1. The first field is the Retrosheet player id, which is unique for each player.
+1. The first field is the inning, an integer starting at 1.
 
-2. The second field is the player's name.
+2. The second field is either 0 (for visiting team) or 1 (for home team).
 
-3. The next field is either 0 (for visiting team), or 1 (for home team).
+3. The third field is the Retrosheet player id of the player at the plate.
 
-4. The next field is the position in the batting order, 1 - 9. When a game is played using the DH rule the pitcher is given the batting order position 0.
+4. The fourth field is the count on the batter when this particular event (play) occurred. Most Retrosheet games do not have this information, and in such cases, "??" appears in this field.
 
-5. The last field is the fielding position. The numbers are in the standard notation, with designated hitters being identified as position 10. On sub records 11 indicates a pinch hitter and 12 is used for a pinch runner.
+5. The fifth field is of variable length and contains all pitches to this batter in this plate appearance and is described below. If pitches are unknown, this field is left empty, nothing is between the commas.
+
+6. The sixth field describes the play or event that occurred.
+
+play,5,1,ramir001,00,,S8.3-H;1-2
+A play record ending in a number sign, #, indicates that there is some uncertainty in the play. Occasionally, a com record may follow providing additional information. A play record may also contain exclamation points, "!" indicating an exceptional play and question marks "?" indicating some uncertainty in the play. These characters can be safely ignored.
+
+play,3,1,kearb001,??,,PB.2-3#
+com,"Not sure if PB, may have been balk"
+The event is the most complex of all the fields and is described in detail below.
