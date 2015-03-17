@@ -178,45 +178,15 @@ EVENT_DESCRIPTOR = {
 }
 
 def unpack(recordLine):
+	""" Unpacks a record line from an event file. The format of the record
+	is derived from the first field of the event file, called the "key", which
+	indicates the type of record the record line is. """
 	key = recordLine.split(",")[0]
 	desc = EVENT_DESCRIPTOR[key]
 	return desc.unpack(recordLine)
 
 def pack(key, **kargs):
+	""" Packs a record into a record line. The format of the record line is
+	derived from the key parameter."""
 	desc = EVENT_DESCRIPTOR[key]
 	return desc.pack(**kargs)
-
-if __name__ == "__main__":
-	def assertEqual(a, b):
-		try:
-			assert a == b
-		except AssertionError, e:
-			e.args += (a, b)
-			raise e
-
-	# unpack id test
-	assertEqual(unpack("id,WAS201404040"), \
-		{"key": "id", "id": "WAS201404040"})
-	# unpack version test
-	assertEqual(unpack("version,2"), {"key": "version", "version": 2})
-	# unpack info test
-	assertEqual(unpack("info,sky,overcast"), \
-		{"key": "info", "infoKey": "sky", "infoValue": "overcast"})
-	assertEqual(unpack("info,timeofgame,183"), \
-		{"key": "info", "infoKey": "timeofgame", "infoValue": "183"})
-	# unpack start test
-	# Lead-Off hitter
-	assertEqual(unpack("start,heywj001,\"Jason Heyward\",0,1,9"), \
-		{"key": "start", "playerId": 'heywj001', \
-		 "playerName": '"Jason Heyward"', \
-		 "homeTeam": 0, "batNum": 1, "fieldNum": 9})
-	# Pitcher in DH-mode - batNum 0
-	assertEqual(unpack("start,zimmj003,\"Jordan Zimmermann\",1,0,1"), \
-		{"key": "start", "playerId": "zimmj003", \
-			"playerName": '"Jordan Zimmermann"', \
-			"homeTeam": 1, "batNum": 0, "fieldNum": 1})
-
-	# unpack play test
-	assertEqual(unpack("play,5,1,ramir001,00,,S8.3-H;1-2"), \
-		{"key": "play", "inning": 5, "homeTeam": 1, "playerId": "ramir001", \
-		"count": "00", "pitches": "", "event": "S8.3-H;1-2"})

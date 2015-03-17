@@ -3,7 +3,7 @@ import zipfile
 import hashlib
 import os
 import re
-import eventfile
+import game
 
 # List of URL's to process - usually a year per URL
 
@@ -63,12 +63,13 @@ def playTeamLogs(zipPath, teamName):
 		else:
 			# print "Year: " + match.group(1)
 			# print "Team: " + match.group(2)
-			# print "League: " + match.group(3)	
-			with zipFile.open(zipInfo) as zipElem:
-				eventfile.processEventLog(zipElem)
+			# print "League: " + match.group(3)
+			if teamName == match.group(2):
+				with zipFile.open(zipInfo) as zipElem:
+					game.processEventFile(zipElem)
 
 
 if __name__ == "__main__":
 	for url in url_list:
 		zipFilename = downloadFile(url)
-		loadTeamLogs(zipFilename, "WAS")
+		playTeamLogs(zipFilename, "WAS")

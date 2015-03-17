@@ -1,4 +1,5 @@
 import re
+import unittest
 
 class ParseError(Exception):
 	def __init__(self, frmt, failStr, *msg):
@@ -96,6 +97,10 @@ class RecordDescriptor(object):
 
 		self.names  += [ tuple(names) ]
 		self.fields += [ frmt ]
+		
+	def add_descriptor(self, desc, name):
+		self.names += [ name ]
+		self.fields += [ desc ]
 
 	def unpack(self, recordLine):
 		""" Unpacks a record based on the descriptor. recordLine should contain
@@ -104,6 +109,12 @@ class RecordDescriptor(object):
 
 		elements = [elem.strip() for elem in recordLine.split(",")]
 		result = {}
+		# if len(elements) != len(self.fields):
+		# 	raise ParseError(str(self.fields), str(elements),
+		# 		("# of fields in record (%d) " % len(elements)) + \
+		# 		"does not match # of fields in " + \
+		# 		"descriptor (%d)." % len(self.fields))
+		
 		for (field, elem, name) in zip(self.fields, elements, self.names):
 
 			# Find all the format specifiers
@@ -141,8 +152,6 @@ class RecordDescriptor(object):
 			# Read in the left-aligned fields
 			(lalign_values, lalign_end) = processChunk()
 
-			print lalign_values
-
 			if lalign_end < len(elem):
 				# Read in the right-aligned fields:
 				(ralign_values, ralign_end) = processChunk(reverse=True)
@@ -154,7 +163,12 @@ class RecordDescriptor(object):
 				var_text = elem[lalign_end:ralign_end]
 				values = lalign_values + \
 					[ formatValue(var_text, ftype) ] + ralign_values
-				print var_text
+			elif len(elem) == 0:
+				if len(frmts) > 1:
+					raise ParseError(field, elem)
+				else:
+					(dummy, ftype) = frmts[0]
+					values = [ formatValue(elem, ftype) ]
 			else:
 				values = lalign_values
 
@@ -186,41 +200,6 @@ class RecordDescriptor(object):
 			result += [packedResult]
 
 		return ",".join(result)
-
-if __name__ == "__main__":
-	# Create a descriptor for the "info" record
-	desc = RecordDescriptor(RecordDescriptor.INFO_RECORD)
-	desc.add_arg("%s", "key")
-	desc.add_arg("%3d%s%3d%2s", "id", "name", "age", "likes")
-
-	record = "info,123doggie456xx"
-	result = desc.unpack(record)
-	print result
-	gen_rec = desc.pack(**result)
-
-	assert record == gen_rec, str(record) + " != " + str(gen_rec)
-	print gen_rec
-
-	record = "info,123456xx"
-	result = desc.unpack(record)
-	print result
-	gen_rec = desc.pack(**result)
-
-	assert record == gen_rec, str(record) + " != " + str(gen_rec)
-	print gen_rec
-
-	desc = RecordDescriptor(RecordDescriptor.INFO_RECORD)
-	desc.add_arg("%s", "key")
-	desc.add_arg("%s", "name")
-
-	record = "test,"
-	result = desc.unpack(record)
-	print result
-	gen_rec = desc.pack(**result)
-
-	assert record == gen_rec, str(record) + " != " + str(gen_rec)
-	print gen_rec
-
 
 
 
