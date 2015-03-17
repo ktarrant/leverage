@@ -141,7 +141,7 @@ def makeDataDescriptor():
 	desc = RecordDescriptor(RecordDescriptor.INFO_RECORD)
 	desc.add_arg("%s", "key")
 	desc.add_arg("%s", "dataKey")
-	desc.add_arg("%s", "playedId")
+	desc.add_arg("%s", "playerId")
 	desc.add_arg("%d", "earnedRuns")
 	return desc
 
@@ -190,3 +190,7 @@ def pack(key, **kargs):
 	derived from the key parameter."""
 	desc = EVENT_DESCRIPTOR[key]
 	return desc.pack(**kargs)
+
+def getRecordType(key):
+	desc = EVENT_DESCRIPTOR[key]
+	return desc.recordType

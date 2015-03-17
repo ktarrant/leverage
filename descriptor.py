@@ -109,12 +109,6 @@ class RecordDescriptor(object):
 
 		elements = [elem.strip() for elem in recordLine.split(",")]
 		result = {}
-		# if len(elements) != len(self.fields):
-		# 	raise ParseError(str(self.fields), str(elements),
-		# 		("# of fields in record (%d) " % len(elements)) + \
-		# 		"does not match # of fields in " + \
-		# 		"descriptor (%d)." % len(self.fields))
-		
 		for (field, elem, name) in zip(self.fields, elements, self.names):
 
 			# Find all the format specifiers

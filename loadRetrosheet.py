@@ -4,6 +4,7 @@ import hashlib
 import os
 import re
 import game
+import winExpConsumer
 
 # List of URL's to process - usually a year per URL
 
@@ -53,6 +54,8 @@ def downloadFile(url):
 	return file_name
 
 def playTeamLogs(zipPath, teamName):
+	wxc = winExpConsumer.GameConsumer()
+
 	zipFile = zipfile.ZipFile(zipPath)
 	for zipInfo in zipFile.infolist():
 		match = teamEventFile.match(zipInfo.filename)
@@ -66,7 +69,7 @@ def playTeamLogs(zipPath, teamName):
 			# print "League: " + match.group(3)
 			if teamName == match.group(2):
 				with zipFile.open(zipInfo) as zipElem:
-					game.processEventFile(zipElem)
+					game.processEventFile(zipElem, wxc)
 
 
 if __name__ == "__main__":
