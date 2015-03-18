@@ -34,24 +34,29 @@ def processEventFile(fileObj, *gameConsumers):
     the event file using the records for the game. For each game object
     produced, all the gameConsumers will be notified of the game. """
     
+    TARGET_GAME = 5
+    gameIndex = 0
+
     gameObj = None
     for line in fileObj:
         record = eventfile.unpack(line)
         if record["key"] == "id":
-			# Give the game consumers the old game object
-			if gameObj != None:
-				for consumer in gameConsumers:
-					consumer.process(gameObj)
+            # Give the game consumers the old game object
+            if gameObj != None:
+                if gameIndex == TARGET_GAME:
+                    for consumer in gameConsumers:
+                        consumer.process(gameObj)
+                    print "Exiting @ game.processEventFile, game %d" % gameIndex
+                    exit()
+                else:
+                    gameIndex += 1
 
-				print "Exiting @ game.processEventFile"
-				exit()
-
-			gameObj = Game(record["id"])
+            gameObj = Game(record["id"])
         elif eventfile.getRecordType(record["key"]) == \
-        	RecordDescriptor.INFO_RECORD:
-        	gameObj.addInfoRecord(record)
+            RecordDescriptor.INFO_RECORD:
+            gameObj.addInfoRecord(record)
         else:
-        	gameObj.addEventRecord(record)
+            gameObj.addEventRecord(record)
 
 
 

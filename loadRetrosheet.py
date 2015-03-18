@@ -5,7 +5,6 @@ import os
 import re
 import game
 import winExpConsumer
-
 # List of URL's to process - usually a year per URL
 
 url_list = [
